@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold">
+            Dashboard Harga Pangan
+        </h2>
+
+        <p class="text-muted mb-0">
+            Monitoring harga pangan secara real-time
+        </p>
+
+        <small class="text-secondary">
+            Data terakhir diperbarui :
+            {{ data["Tanggal"].max().strftime("%d %B %Y") }}
+        </small>
+    </div>
+
+    <div>
+        <span class="badge bg-success p-2">
+            🟢 AI Engine Ready
+        </span>
+    </div>
+</div>
+
+<!-- CARD KOMODITAS -->
+<div class="row">
+{% for item in data.itertuples() %}
+<div class="col-lg-6 mb-4">
+
+    <div class="card shadow-sm border-0 h-100">
+
+        <div class="card-body">
+
+            <!-- Nama + Status -->
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+
+                    <h5 class="fw-bold">
+                        {{ item._1 }}
+                    </h5>
+
+                    <h3 class="text-primary">
+                        Rp {{ "{:,.0f}".format(item.Harga) }}
+                    </h3>
+
+                </div>
+
+                <div>
+
+                    {% if item.Price_Diff > 0 %}
+                        <span class="badge bg-success">
+                            ▲ Naik
+                        </span>
+
+                    {% elif item.Price_Diff < 0 %}
+                        <span class="badge bg-danger">
+                            ▼ Turun
+                        </span>
+
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            ■ Stabil
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <!-- Grafik -->
+            <p class="text-muted mb-2">
+                Grafik harga 7 hari terakhir
+            </p>
+            <div class="chart-container">
+                <canvas
+                    id="chart{{ loop.index }}"
+                    data-tanggal='{{ item.Grafik["tanggal"]|tojson}}'
+                    data-harga='{{ item.Grafik["harga"]|tojson}}'
+                    data-status='{{ "naik" if item["Price_Diff"] > 0 else "turun" if item["Price_Diff"] < 0 else "stabil" }}'>
+                </canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+</div>
+
+<!-- GARDA INSIGHT -->
+<div class="card shadow-sm border-0 mt-4">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            GARDA Insight
+        </h4>
+        <hr>
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <p>Total Komoditas :
+                    <strong>{{ insight.total }}</strong>
+                </p>
+
+                <p>🟢 Naik :
+                    <strong>{{ insight.naik }}</strong>
+                </p>
+
+                <p>🔴 Turun :
+                    <strong>{{ insight.turun }}</strong>
+                </p>
+
+                <p>🔵 Stabil :
+                    <strong>{{ insight.stabil }}</strong>
+                </p>
+
+            </div>
+
+            <div class="col-md-6">
+                <p>Kenaikan Terbesar</p>
+                <strong>{{ insight.komoditas_naik }}</strong>
+                <br>
+                {{ insight.persen_naik }} %
+                <br><br>
+                <p>Penurunan Terbesar</p>
+                <strong>{{ insight.komoditas_turun }}</strong>
+                <br>
+                {{ insight.persen_turun }} %
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="alert alert-primary mb-0">
+            <strong>Analisis GARDA AI</strong>
+            <br><br>
+
+            {{ insight.narasi }}
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

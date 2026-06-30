@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold">
+            Prediksi Harga
+        </h2>
+
+        <p class="text-muted mb-0">
+            Prediksi harga pangan menggunakan AI GARDA
+        </p>
+    </div>
+
+    <span class="badge bg-success p-2">
+        AI Engine Ready
+    </span>
+
+</div>
+
+<!-- FORM -->
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            <div class="mb-3">
+
+                <label class="form-label fw-bold">
+                    Pilih Komoditas
+                </label>
+
+                <select class="form-select" name="komoditas">
+                    {% for item in komoditas_list %}
+
+                    <option
+                    {% if hasil %}
+                        {% if hasil["komoditas"] == item %}
+                            selected
+                        {% endif %}
+                    {% endif %}
+                    >
+                        {{ item }}
+                    </option>
+
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Prediksi Sekarang
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- HASIL -->
+{% if hasil %}
+<div class="row">
+
+    <div class="col-md-6 mb-3">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Harga Hari Ini
+                </h6>
+
+                <h2 class="text-primary">
+                    Rp {{ "{:,.0f}".format(hasil["harga_sekarang"]) }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6 mb-3">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Prediksi Besok
+                </h6>
+
+                <h2 class="text-success">
+                    Rp {{ "{:,.0f}".format(hasil["harga_prediksi"]) }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% if grafik %}
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            Grafik Historis 7 Hari
+        </h4>
+
+        <hr>
+
+        <canvas id="historyChart"></canvas>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+<div class="card shadow-sm border-0 mt-3">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            Hasil Analisis AI
+        </h4>
+
+        <hr>
+
+        <table class="table">
+
+            <tr>
+
+                <th width="220">
+                    Komoditas
+                </th>
+
+                <td>
+                    {{ hasil["komoditas"] }}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>
+                    Tanggal
+                </th>
+
+                <td>
+                    {{ hasil["tanggal"] }}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>
+                    Status
+                </th>
+
+                <td>
+
+                    {% if hasil["status"] == "Naik" %}
+
+                        <span class="badge bg-success">
+
+                            ▲ Naik
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+
+                            ▼ Turun
+
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>
+                    Selisih
+                </th>
+
+                <td>
+                    Rp {{ "{:,.0f}".format(hasil["selisih"]) }}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>
+                    Persentase
+                </th>
+
+                <td>
+                    {{ hasil["persentase"] }} %
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="card shadow-sm border-0 mt-4">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            Kesimpulan AI
+        </h4>
+
+        <hr>
+
+        {% if hasil["status"] == "Naik" %}
+        <div class="alert alert-success">
+            AI memprediksi harga
+            <strong>{{ hasil["komoditas"] }}</strong>
+            akan mengalami
+            <strong>KENAIKAN</strong>
+            pada hari berikutnya.
+        </div>
+
+        {% else %}
+        <div class="alert alert-danger">
+            AI memprediksi harga
+            <strong>{{ hasil["komoditas"] }}</strong>
+            akan mengalami
+            <strong>PENURUNAN</strong>
+            pada hari berikutnya.
+        </div>
+
+        {% endif %}
+
+    </div>
+    
+</div>
+
+{% endif %}
+{% if grafik %}
+<div id="chart-data"
+     data-tanggal='{{ grafik["tanggal"]|tojson }}'
+     data-historis='{{ grafik["historis"]|tojson }}'
+     data-prediksi='{{ grafik["prediksi"]|tojson }}'>
+</div>
+
+<script src="{{ url_for('static', filename='js/prediksi.js') }}"></script>
+{% endif %}
+{% endblock %}

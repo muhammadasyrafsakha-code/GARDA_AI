@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GARDA AI</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<div class="main-container">
+    <!--SIDEBAR-->
+    <aside class="sidebar">
+        <h2 class="text-center fw-bold">
+            GARDA AI
+        </h2>
+
+        <p class="subtitle text-center">
+            Smart Food Price Intelligence
+        </p>
+
+        <hr class="text-light">
+        <!-- MENU-->
+        <ul class="list-unstyled">
+
+            <li>
+                <a href="/" class="btn btn-primary w-100">
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="/prediksi" class="btn btn-outline-light w-100 mt-2">
+                    Prediksi Harga
+                </a>
+            </li>
+
+            <li>
+                <a href="/peringatan_dini" class="btn btn-outline-light w-100 mt-2">
+                    Peringatan Dini
+                </a>
+            </li>
+
+            <li>
+                <a href="/simulasi" class="btn btn-outline-light w-100 mt-2">
+                    Kalkulator Pengeluaran
+                </a>
+            </li>
+
+            <li>
+                <a href="/rekomendasi" class="btn btn-outline-light w-100 mt-2">
+                    Rekomendasi AI
+                </a>
+            </li>
+
+            <li>
+                <a href="/cek-harga" class="btn btn-outline-light w-100 mt-2">
+                    Cek Kewajaran Harga
+                </a>
+            </li>
+
+            <!--Memperbarui data-->
+
+            <li class="mt-4">
+                <hr class="text-light">
+                <small class="text-light fw-bold">
+                    AI MANAGEMENT
+                </small>
+            </li>
+
+            <li>
+                <a href="/update-data" class="btn btn-success w-100 mt-2">
+                    Update Data
+                </a>
+            </li>
+        </ul>
+
+        <!--FOOTER-->
+        <div class="sidebar-footer mt-5">
+            <hr class="text-light">
+            <small>
+                <strong>GARDA AI v1.0</strong>
+                <br><br>
+                XGBoost AI
+                <br>
+                Flask Framework
+                <br>
+                Chart.js
+                <br>
+                Bootstrap 5
+                <br>
+                Data PIHPS Nasional
+            </small>
+        </div>
+    </aside>
+
+    <!--CONTENT-->
+    <main class="content">
+        {% block content %}
+        {% endblock %}
+    </main>
+</div>
+
+<!--Bootstrap JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

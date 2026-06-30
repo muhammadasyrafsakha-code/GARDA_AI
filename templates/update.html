@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold">
+            Update Data GARDA AI
+        </h2>
+
+        <p class="text-muted">
+            Perbarui dataset terbaru dari PIHPS dan latih ulang model AI.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            Update Dataset
+        </h4>
+
+        <hr>
+
+        <p>
+            Proses ini akan:
+        </p>
+
+        <ul>
+            <li>Mengambil data harga terbaru dari PIHPS.</li>
+            <li>Memperbarui dataset.</li>
+            <li>Membuat feature baru.</li>
+            <li>Melatih ulang model AI.</li>
+        </ul>
+
+        <form action="/run-pipeline" method="GET">
+
+            <button
+                class="btn btn-success btn-lg">
+                Update Data
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% if pipeline %}
+
+<div class="card shadow-sm border-0 mt-4">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            Hasil Update
+        </h4>
+
+        <hr>
+
+        {% if pipeline.status=="success" %}
+        <div class="alert alert-success">
+            {{ pipeline.message }}
+        </div>
+
+        {% else %}
+        <div class="alert alert-danger">
+            {{ pipeline.message }}
+        </div>
+
+        {% endif %}
+        <table class="table">
+            <tr>
+                <th>Status</th>
+                <td>{{ pipeline.status }}</td>
+            </tr>
+
+            <tr>
+                <th>Durasi</th>
+                <td>{{ pipeline.time }} detik</td>
+            </tr>
+
+            <tr>
+                <th>Terakhir Update</th>
+                <td>{{ pipeline.updated_at }}</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!--HEADER-->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold">
+            Cek Kewajaran Harga
+        </h2>
+
+        <p class="text-muted mb-0">
+            Bandingkan harga yang Anda temukan dengan harga referensi hasil prediksi GARDA AI.
+        </p>
+
+    </div>
+
+    <span class="badge bg-success p-2">
+        Price Checker
+    </span>
+
+</div>
+
+<!--FORM-->
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label class="fw-bold mb-2">
+                        Pilih Komoditas
+                    </label>
+
+                    <select
+                        name="komoditas"
+                        class="form-select"
+                        required>
+
+                        {% for item in komoditas %}
+                        <option value="{{ item }}">
+                            {{ item }}
+                        </option>
+
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="fw-bold mb-2">
+                        Harga yang Anda Temukan (Rp)
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="harga"
+                        placeholder="Contoh : 45000 (dalam kg/L)"
+                        required>
+
+                </div>
+
+            </div>
+
+            <button class="btn btn-primary btn-lg mt-4">
+                Cek Sekarang
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!--HASIL -->
+{% if hasil %}
+<div class="card shadow-sm border-0">
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <h3 class="fw-bold">
+                {{ hasil.ikon }}
+                {{ hasil.status }}
+            </h3>
+
+            <span class="badge bg-{{ hasil.warna }} p-2">
+                {{ hasil.persentase }} %
+            </span>
+
+        </div>
+
+        <hr>
+
+        <div class="row text-center">
+
+            <div class="col-md-4">
+
+                <small class="text-muted">
+                    Harga Pasar
+                </small>
+
+                <h4>
+                    Rp {{ "{:,.0f}".format(hasil.harga_input) }}
+                </h4>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <small class="text-muted">
+                    Harga Referensi GARDA AI
+                </small>
+
+                <h4 class="text-primary">
+                    Rp {{ "{:,.0f}".format(hasil.harga_ai) }}
+                </h4>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <small class="text-muted">
+                    Selisih
+                </small>
+
+                <h4>
+                    Rp {{ "{:,.0f}".format(hasil.selisih) }}
+                </h4>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <!--AI INSIGHT-->
+        <div class="alert alert-{{ hasil.warna }}">
+
+            <h5 class="fw-bold">
+                GARDA AI Insight
+            </h5>
+
+            <p class="mb-0">
+                {{ hasil.insight }}
+            </p>
+
+        </div>
+
+        <!--SCORE-->
+
+        <hr>
+
+        <h5 class="fw-bold text-center">
+            Indeks Kewajaran Harga GARDA AI
+        </h5>
+
+        <div class="text-center mt-4">
+            <h1 class="display-2 fw-bold text-{{ hasil.warna }}">
+                {{ hasil.score }}
+            </h1>
+
+            <p class="text-muted">
+                dari 100
+            </p>
+
+            {% if hasil.score >= 80 %}
+
+                <span class="badge bg-success p-2">
+                    🟢 Sangat Wajar
+                </span>
+
+            {% elif hasil.score >= 60 %}
+
+                <span class="badge bg-warning text-dark p-2">
+                    🟡 Cukup Wajar
+                </span>
+
+            {% else %}
+
+                <span class="badge bg-danger p-2">
+                    🔴 Tidak Wajar
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        <!--PROGRESS-->
+
+        <div class="progress mt-4" style="height:28px;">
+
+            <div
+                class="progress-bar bg-{{ hasil.warna }}"
+                role="progressbar"
+                aria-valuenow="{{ hasil.score }}"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="width: {{ hasil.score }}%;">
+                {{ hasil.score }}%
+            </div>
+
+        </div>
+
+        <p class="text-center text-muted mt-3">
+            Semakin tinggi skor, semakin mendekati harga referensi hasil prediksi GARDA AI.
+        </p>
+
+        <!--RINGKASAN-->
+        <div class="card bg-light border-0 mt-4">
+
+            <div class="card-body">
+
+                <h5>
+                    Ringkasan Analisis
+                </h5>
+
+                <ul class="mb-0">
+
+                    <li>
+                        Harga yang Anda masukkan :
+                        <strong>
+                            Rp {{ "{:,.0f}".format(hasil.harga_input) }}
+                        </strong>
+                    </li>
+
+                    <li>
+                        Harga referensi GARDA AI :
+                        <strong>
+                            Rp {{ "{:,.0f}".format(hasil.harga_ai) }}
+                        </strong>
+                    </li>
+
+                    <li>
+                        Selisih harga :
+                        <strong>
+                            {{ hasil.persentase }}%
+                        </strong>
+                    </li>
+
+                    <li>
+                        Status :
+                        <strong>
+                            {{ hasil.status }}
+                        </strong>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+{% endblock %}

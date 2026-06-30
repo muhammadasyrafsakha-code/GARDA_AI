@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!--HEADER-->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold">
+            Rekomendasi AI
+        </h2>
+
+        <p class="text-muted mb-0">
+            Rekomendasi pembelian berdasarkan hasil prediksi harga menggunakan GARDA AI.
+        </p>
+    </div>
+
+    <span class="badge bg-success p-2">
+        AI Recommendation
+    </span>
+
+</div>
+
+<!-- Indikator Utama-->
+<div class="row mb-4">
+
+    <div class="col-md-3 mb-3">
+
+        <div class="card shadow-sm border-0 text-center">
+
+            <div class="card-body">
+
+                <h2 class="fw-bold">
+                    {{ summary.jumlah }}
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Komoditas Dianalisis
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <div class="card shadow-sm border-0 text-center">
+
+            <div class="card-body">
+
+                <h2 class="text-danger fw-bold">
+                    {{ summary.prioritas }}
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Prioritas Dibeli
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <div class="card shadow-sm border-0 text-center">
+
+            <div class="card-body">
+
+                <h2 class="text-warning fw-bold">
+                    {{ summary.stabil }}
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Stabil
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <div class="card shadow-sm border-0 text-center">
+
+            <div class="card-body">
+
+                <h2 class="text-primary fw-bold">
+                    {{ summary.turun }}
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Bisa Ditunda
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--SUMMARY -->
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            GARDA AI Summary
+        </h4>
+
+        <hr>
+
+        <p>
+            GARDA AI telah menganalisis
+            <strong>{{ summary.jumlah }}</strong>
+            komoditas pangan berdasarkan data historis dan hasil prediksi model AI.
+        </p>
+
+        <p>
+            Komoditas dengan prioritas pembelian tertinggi hari ini adalah:
+        </p>
+
+        <ol>
+
+            <li>
+                <strong>{{ summary.top1 }}</strong>
+            </li>
+
+            <li>
+                <strong>{{ summary.top2 }}</strong>
+            </li>
+
+        </ol>
+
+        <div class="alert alert-info mb-0">
+            <strong>Rekomendasi GARDA AI</strong>
+            <br><br>
+            Prioritaskan pembelian komoditas dengan prediksi kenaikan harga tertinggi
+            untuk membantu mengurangi risiko peningkatan pengeluaran rumah tangga.
+        </div>
+
+    </div>
+
+</div>
+
+<!--DAFTAR REKOMENDASI-->
+<h4 class="fw-bold mb-3">
+    Daftar Rekomendasi Komoditas
+</h4>
+
+<div class="row">
+
+{% for item in data %}
+<div class="col-lg-6 mb-4">
+
+<div class="card shadow-sm border-0 h-100">
+
+<div class="card-body">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">
+            {{ item.komoditas }}
+        </h5>
+
+        {% if item.persentase > 2 %}
+            <span class="badge bg-danger">
+                Prioritas
+            </span>
+
+        {% elif item.persentase >= 0 %}
+            <span class="badge bg-warning text-dark">
+                Pantau
+            </span>
+
+        {% else %}
+            <span class="badge bg-success">
+                Ditunda
+            </span>
+
+        {% endif %}
+
+    </div>
+
+    <!-- Harga -->
+    <div class="row text-center">
+
+        <div class="col-6 border-end">
+
+            <small class="text-muted">
+                Harga Saat Ini
+            </small>
+
+            <h5 class="fw-bold mt-2">
+                Rp {{ "{:,.0f}".format(item.harga) }}
+            </h5>
+
+        </div>
+
+        <div class="col-6">
+
+            <small class="text-muted">
+                Prediksi Besok
+            </small>
+
+            <h5 class="fw-bold text-primary mt-2">
+                Rp {{ "{:,.0f}".format(item.prediksi) }}
+            </h5>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <!-- Perubahan -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <span class="text-muted">
+            Perubahan Harga
+        </span>
+
+        {% if item.persentase >= 0 %}
+        <span class="fw-bold text-danger">
+            ▲ {{ "%.2f"|format(item.persentase) }}%
+        </span>
+
+        {% else %}
+        <span class="fw-bold text-success">
+            ▼ {{ "%.2f"|format(item.persentase|abs) }}%
+        </span>
+
+        {% endif %}
+
+    </div>
+
+    <!-- Insight -->
+    <div class="alert alert-light border mb-0">
+
+        <div class="fw-bold mb-2">
+            GARDA AI
+        </div>
+
+        {% if item.persentase > 2 %}
+        <p class="mb-2">
+            Harga diprediksi mengalami kenaikan cukup tinggi sehingga komoditas ini menjadi prioritas pembelian.
+        </p>
+
+        <div class="text-danger fw-semibold">
+            Rekomendasi :
+            Lakukan pembelian lebih awal.
+        </div>
+
+        {% elif item.persentase >= 0 %}
+
+        <p class="mb-2">
+            Harga diprediksi relatif stabil dan belum menunjukkan perubahan yang signifikan.
+        </p>
+
+        <div class="text-warning fw-semibold">
+            Rekomendasi :
+            Belanja sesuai kebutuhan.
+        </div>
+
+        {% else %}
+
+        <p class="mb-2">
+            Harga diprediksi mengalami penurunan dibandingkan harga saat ini.
+        </p>
+
+        <div class="text-success fw-semibold">
+            Rekomendasi :
+            Pembelian dapat ditunda.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+</div>
+{% endblock %}

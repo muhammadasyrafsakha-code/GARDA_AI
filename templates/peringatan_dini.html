@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold">
+            Peringatan Dini
+        </h2>
+
+        <p class="text-muted mb-0">
+            Deteksi dini kenaikan harga pangan menggunakan GARDA AI
+        </p>
+
+    </div>
+
+    <span class="badge bg-danger p-2">
+        Early Warning System
+    </span>
+
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <h4 class="fw-bold">
+            Ringkasan GARDA AI
+        </h4>
+
+        <hr>
+
+        <div class="row text-center">
+
+            <div class="col">
+                <h3 class="text-danger">
+                    {{ ringkasan.tinggi }}
+                </h3>
+
+                <small>Risiko Tinggi</small>
+
+            </div>
+
+            <div class="col">
+
+                <h3 class="text-warning">
+                    {{ ringkasan.sedang }}
+                </h3>
+
+                <small>Risiko Sedang</small>
+
+            </div>
+
+            <div class="col">
+
+                <h3 class="text-success">
+                    {{ ringkasan.rendah }}
+                </h3>
+
+                <small>Risiko Rendah</small>
+
+            </div>
+
+            <div class="col">
+
+                <h3 class="text-primary">
+                    {{ ringkasan.turun }}
+                </h3>
+
+                <small>Harga Turun</small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% if peringatan %}
+<div class="alert alert-danger shadow-sm border-0 mb-4">
+    <h4 class="fw-bold">
+        PERINGATAN GARDA AI
+    </h4>
+
+    <hr>
+
+    <p class="mb-1">
+        <strong>{{ peringatan.komoditas }}</strong>
+        diprediksi mengalami kenaikan harga sebesar
+        <strong>{{ peringatan.persentase }}%</strong>.
+    </p>
+
+    <p class="mb-0">
+        Disarankan melakukan pembelian lebih awal
+        untuk mengantisipasi kenaikan harga.
+    </p>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-success shadow-sm border-0 mb-4">
+    <h4 class="fw-bold">
+        🟢 Kondisi Pasar Aman
+    </h4>
+
+    <hr>
+    Tidak ditemukan komoditas dengan risiko tinggi hari ini.
+</div>
+
+{% endif %}
+<div class="row">
+{% for item in data %}
+
+<div class="col-lg-6 mb-4">
+
+    <div class="card border-0 shadow-sm h-100">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between">
+
+                <div>
+
+                    <h5 class="fw-bold">
+                        {{ item.komoditas }}
+                    </h5>
+
+                    <small class="text-muted">
+                        Risiko Harga
+                    </small>
+
+                </div>
+
+                <span class="badge bg-{{ item.warna }}">
+                    {{ item.ikon }} {{ item.level }}
+                </span>
+
+            </div>
+
+            <hr>
+
+            <p>
+                <strong>Harga Saat Ini</strong>
+                <br>
+                Rp {{ "{:,.0f}".format(item.harga) }}
+            </p>
+
+            <p>
+                <strong>Prediksi Besok</strong>
+                <br>
+                Rp {{ "{:,.0f}".format(item.prediksi) }}
+            </p>
+
+            
+            <p>
+                <strong>Perubahan</strong>
+                <br>
+
+                {% if item.persentase > 0 %}
+                    <span class="text-danger fw-bold">
+                        ▲ +{{ item.persentase }} %
+                    </span>
+
+                {% elif item.persentase < 0 %}
+                    <span class="text-primary fw-bold">
+                        ▼ {{ item.persentase }} %
+                    </span>
+
+                {% else %}
+                    <span class="text-success fw-bold">
+                        ■ 0 %
+                    </span>
+                {% endif %}
+
+            </p>
+
+            <div class="alert alert-{{ item.warna }} mb-0">
+                {{ item.pesan }}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+</div>
+{% endblock %}
