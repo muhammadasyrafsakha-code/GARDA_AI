@@ -4,11 +4,11 @@ from prediction import prediksi_harga
 # KONFIGURASI
 DATASET = "dataset/processed/GARDA_DATASET_FEATURE.csv"
 
+df_global = pd.read_csv(DATASET)
+df_global["Tanggal"] = pd.to_datetime(df_global["Tanggal"])
 # MEMBACA DATASET
 def baca_dataset():
-    df = pd.read_csv(DATASET)
-    df["Tanggal"] = pd.to_datetime(df["Tanggal"])
-    return df
+    return df_global
 
 # MENGAMBIL DATA TERAKHIR KOMODITAS
 def ambil_data_terakhir(df, komoditas):
@@ -138,8 +138,7 @@ def histori_7_hari(komoditas):
 
 #mengabil data untuk dashboard
 def get_dashboard_data():
-    df = pd.read_csv("dataset/processed/GARDA_DATASET_FEATURE.csv")
-    df["Tanggal"] = pd.to_datetime(df["Tanggal"])
+    df = baca_dataset()
     data = (df.sort_values("Tanggal").groupby("Komoditas (Rp)").tail(1).copy())
     grafik_list = []
 
