@@ -3,6 +3,7 @@ from prediction import prediksi_harga
 
 # KONFIGURASI
 DATASET = "dataset/processed/GARDA_DATASET_FEATURE.csv"
+CACHE_PREDIKSI =  {} 
 
 df_global = pd.read_csv(DATASET)
 df_global["Tanggal"] = pd.to_datetime(df_global["Tanggal"])
@@ -20,46 +21,47 @@ def ambil_data_terakhir(df, komoditas):
 
 # AI ENGINE
 def prediksi_otomatis(komoditas):
+
+    if komoditas in CACHE_PREDIKSI:
+        return CACHE_PREDIKSI[komoditas]
+
     df = baca_dataset()
     data = ambil_data_terakhir(df, komoditas)
+
     hasil_ai = prediksi_harga(
         komoditas=komoditas,
-
         lag1=float(data["Lag_1"]),
         lag3=float(data["Lag_3"]),
         lag7=float(data["Lag_7"]),
-
         ma7=float(data["MA_7"]),
         ma30=float(data["MA_30"]),
-
         price_diff=float(data["Price_Diff"]),
         price_change=float(data["Price_Change"]),
-
         tahun=int(data["Tahun"]),
         bulan=int(data["Bulan"]),
         hari=int(data["Hari"])
-    )
+        )
 
     harga_sekarang = float(data["Harga"])
     harga_prediksi = hasil_ai["harga_prediksi"]
-    selisih = harga_prediksi - harga_sekarang
-    persentase = (selisih / harga_sekarang) * 100
-
-    return {
+    hasil = {
         "komoditas": komoditas,
-        "tanggal":
-        data["Tanggal"].strftime("%d-%m-%Y"),
-        "harga_sekarang":
-        round(harga_sekarang,2),
-        "harga_prediksi":
-        round(harga_prediksi,2),
-        "selisih":
-        round(selisih,2),
-        "persentase":
-        round(persentase,2),
-        "status":
-        "Naik" if selisih > 0 else "Turun"
-    }
+        "tanggal": data["Tanggal"].strftime("%d-%m-%Y"),
+        "harga_sekarang": round(harga_sekarang,2),
+        "harga_prediksi": round(harga_prediksi,2),
+        "selisih": round(harga_prediksi-harga_sekarang,2),
+        "persentase": round((harga_prediksi-harga_sekarang)/harga_sekarang*100,2),
+        "status": "Naik" if harga_prediksi>harga_sekarang else "Turun"
+        }
+
+    CACHE_PREDIKSI[komoditas]=hasil
+    return hasil
+def refresh_cache():
+    CACHE_PREDIKSI.clear()
+
+    for komoditas in daftar_komoditas():
+        prediksi_otomatis(komoditas)
+    print("Cache prediksi telah diperbarui")
 
 #insight (rule logic)
 def garda_insight(data):
@@ -337,6 +339,8 @@ def cek_kewajaran(komoditas, harga_input):
         "insight": insight,
         "score": round(score)
     }
+
+refresh_cache()
 
 # TEST PROGRAM
 if __name__ == "__main__":
